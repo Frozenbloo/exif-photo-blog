@@ -14,6 +14,7 @@ import AnimateItems from '@/components/AnimateItems';
 import { useAppState } from '@/app/AppState';
 import Spinner from '@/components/Spinner';
 import { useAppText } from '@/i18n/state/client';
+import { DEFAULT_DESIGN, DESIGN_CONFIG } from '@/design';
 
 export default function Footer() {
   const pathname = usePathname();
@@ -23,7 +24,12 @@ export default function Footer() {
     userEmailEager,
     isCheckingAuth,
     clearAuthStateAndRedirectIfNecessary,
+    design,
   } = useAppState();
+
+  // Theme switching is moot when the design forces a color scheme
+  const showThemeSwitcher =
+    !DESIGN_CONFIG[design ?? DEFAULT_DESIGN].forcedColorScheme;
 
   const appText = useAppText();
 
@@ -72,9 +78,10 @@ export default function Footer() {
                         {appText.nav.admin}
                       </Link>}
               </div>
-              <div className="flex items-center h-10 shrink-0">
-                <ThemeSwitcher />
-              </div>
+              {showThemeSwitcher &&
+                <div className="flex items-center h-10 shrink-0">
+                  <ThemeSwitcher />
+                </div>}
             </div>]
             : []}
         />}

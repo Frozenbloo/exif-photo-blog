@@ -3,6 +3,7 @@ import { revalidatePath, revalidateTag } from 'next/cache';
 
 // Page keys
 export const KEY_ABOUT          = 'about';
+export const KEY_DESIGN         = 'design';
 // Table key
 export const KEY_PHOTOS         = 'photos';
 export const KEY_PHOTO          = 'photo';
@@ -21,6 +22,9 @@ export const KEY_DATE_RANGE     = 'date-range';
 
 export const revalidateAboutKey = () =>
   revalidateTag(KEY_ABOUT, 'max');
+
+export const revalidateDesignKey = () =>
+  revalidateTag(KEY_DESIGN, 'max');
 
 export const revalidatePhotosKey = () =>
   revalidateTag(KEY_PHOTOS, 'max');
@@ -51,6 +55,7 @@ export const revalidateFocalLengthsKey = () =>
 
 export const revalidateAllKeys = () => {
   revalidateAboutKey();
+  revalidateDesignKey();
   revalidatePhotosKey();
   revalidateYearsKey();
   revalidateCamerasKey();

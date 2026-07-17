@@ -52,6 +52,12 @@ import MaskedScroll from '@/components/MaskedScroll';
 import { useAppText } from '@/i18n/state/client';
 import { Album } from '@/album';
 import AdminPhotoStorageCheck from '@/admin/storage/AdminPhotoStorageCheck';
+import {
+  isDesignApplied,
+  inkForYear,
+  volumeLabelForYear,
+  yearFromPhotoDate,
+} from '@/design';
 
 export default function PhotoLarge({
   photo,
@@ -130,6 +136,7 @@ export default function PhotoLarge({
     arePhotosMatted,
     shouldDebugRecipeOverlays,
     isUserSignedIn,
+    design,
   } = useAppState();
 
   const appText = useAppText();
@@ -278,21 +285,229 @@ export default function PhotoLarge({
       : !MATTE_COLOR && 'dark:bg-gray-700/30'),
   );
 
+  const renderMainImage = showZoomControls
+    ? <div className={largePhotoContainerClassName}>
+      {renderLargePhoto}
+    </div>
+    : <Link
+      href={pathForPhoto({ photo })}
+      className={largePhotoContainerClassName}
+      prefetch={prefetch}
+    >
+      {renderLargePhoto}
+    </Link>;
+
+  // DESIGNED PRESENTATION (site-wide design themes):
+  // caption apparatus below the photo replaces the metadata side rail
+  if (isDesignApplied(design)) {
+    const isVolumes = design === 'volumes';
+    const isIssue = design === 'issue';
+    const isTitlecard = design === 'titlecard';
+    const isHijack = design === 'hijack';
+    const isCentered = isVolumes || isTitlecard;
+
+    const photoYear = yearFromPhotoDate(photo.takenAtNaive);
+    const volumeInk = inkForYear(photoYear);
+
+    const exifLineValues = [
+      photo.focalLengthFormatted,
+      photo.fNumberFormatted,
+      photo.exposureTimeFormatted,
+      photo.isoFormatted,
+      photo.exposureCompensationFormatted ??
+        (ALWAYS_SHOW_EXPOSURE_COMP ? '0ev' : undefined),
+    ].filter(Boolean) as string[];
+
+    const designedTitleClassName = clsx(
+      'inline-block',
+      isVolumes && 'font-serif italic text-2xl',
+      isIssue && 'font-masthead uppercase tracking-wide text-3xl',
+      isTitlecard && 'font-mincho font-bold tracking-[0.15em] text-2xl',
+      isHijack && 'font-mono uppercase tracking-[0.1em] text-lg',
+    );
+
+    const renderDesignedTitle =
+      <PhotoLink photo={photo} prefetch={prefetch} />;
+
+    return (
+      <AppGrid
+        containerRef={ref}
+        className={className}
+        contentMain={
+          <div className="space-y-5">
+            <div className="relative design-photo-frame">
+              {renderMainImage}
+              {isHijack && <>
+                <span className={clsx(
+                  'absolute top-0 left-0 size-4 z-10 pointer-events-none',
+                  'border-t-2 border-l-2 border-(--d-focus)',
+                )} />
+                <span className={clsx(
+                  'absolute top-0 right-0 size-4 z-10 pointer-events-none',
+                  'border-t-2 border-r-2 border-(--d-focus)',
+                )} />
+                <span className={clsx(
+                  'absolute bottom-0 left-0 size-4 z-10 pointer-events-none',
+                  'border-b-2 border-l-2 border-(--d-focus)',
+                )} />
+                <span className={clsx(
+                  'absolute bottom-0 right-0 size-4 z-10 pointer-events-none',
+                  'border-b-2 border-r-2 border-(--d-focus)',
+                )} />
+              </>}
+            </div>
+            <div className={clsx(
+              'space-y-2',
+              isCentered && 'text-center',
+            )}>
+              <div className="float-end">
+                {renderAdminMenu}
+              </div>
+              {isVolumes && photoYear &&
+                <div
+                  className="text-xs uppercase tracking-[0.25em]"
+                  style={{ color: volumeInk }}
+                >
+                  {volumeLabelForYear(photoYear)}
+                </div>}
+              {(isIssue || isTitlecard) &&
+                <PhotoDate
+                  photo={photo}
+                  className={clsx(
+                    'block font-mono text-xs uppercase text-(--d-ink)',
+                    isIssue ? 'tracking-[0.2em]' : 'tracking-[0.4em]',
+                  )}
+                  timezone={null}
+                  hideTime={!SHOW_TAKEN_AT_TIME}
+                />}
+              {hasTitle && (showTitleAsH1
+                ? <h1 className={designedTitleClassName}>
+                  {renderDesignedTitle}
+                </h1>
+                : <div className={designedTitleClassName}>
+                  {renderDesignedTitle}
+                </div>)}
+              {photo.caption &&
+                <div className={clsx(
+                  'text-medium',
+                  isVolumes && 'font-serif italic',
+                )}>
+                  {photo.caption}
+                </div>}
+              {isHijack
+                ? <div className={clsx(
+                  'inline-block text-left',
+                  'font-mono text-xs leading-relaxed text-(--d-ink)',
+                )}>
+                  <div>&gt; open {photo.id}.raw ... [OK]</div>
+                  {showExifContent && exifLineValues.length > 0 &&
+                    <div>&gt; exif: {exifLineValues.join(' ')} ... [OK]</div>}
+                  {photo.film &&
+                    <div>&gt; film: {photo.film} ... [OK]</div>}
+                </div>
+                : showExifContent && exifLineValues.length > 0 &&
+                  <div className={clsx(
+                    'font-mono text-xs uppercase',
+                    isTitlecard
+                      ? 'tracking-[0.3em] text-(--d-ink)'
+                      : 'tracking-[0.15em] text-dim',
+                  )}>
+                    {exifLineValues.join(isTitlecard ? ' ▸ ' : ' · ')}
+                  </div>}
+              <div className={clsx(
+                'flex flex-wrap items-center gap-x-4 gap-y-1 text-sm',
+                isCentered && 'justify-center',
+              )}>
+                {showCameraContent &&
+                  <PhotoCamera
+                    camera={camera}
+                    contrast="medium"
+                    prefetch={prefetchRelatedLinks}
+                  />}
+                {showLensContent &&
+                  <PhotoLens
+                    lens={lens}
+                    contrast="medium"
+                    prefetch={prefetchRelatedLinks}
+                  />}
+                {showFilmContent && photo.film &&
+                  <PhotoFilm
+                    ref={refPhotoFilm}
+                    film={photo.film}
+                    make={photo.make}
+                    prefetch={prefetchRelatedLinks}
+                    {...photo.recipeData && !photo.recipeTitle && {
+                      toggleRecipeOverlay,
+                      isShowingRecipeOverlay,
+                    }}
+                  />}
+                {showRecipeContent && recipeTitle &&
+                  <PhotoRecipe
+                    ref={refPhotoRecipe}
+                    recipe={recipeTitle}
+                    contrast="medium"
+                    prefetch={prefetchRelatedLinks}
+                    toggleRecipeOverlay={toggleRecipeOverlay}
+                    isShowingRecipeOverlay={isShowingRecipeOverlay}
+                  />}
+                {showTagsContent &&
+                  <PhotoTags
+                    tags={tags}
+                    contrast="medium"
+                    prefetch={prefetchRelatedLinks}
+                  />}
+                {!(isIssue || isTitlecard) &&
+                  <PhotoDate
+                    photo={photo}
+                    className="text-medium"
+                    timezone={null}
+                    hideTime={!SHOW_TAKEN_AT_TIME}
+                  />}
+                <div className="flex items-center gap-1">
+                  {showZoomControls &&
+                    <LoaderButton
+                      tooltip={appText.tooltip.zoom}
+                      icon={<LuExpand size={15} />}
+                      onClick={() => refZoomControls.current?.open()}
+                      styleAs="link"
+                      className="text-medium"
+                      hideFocusOutline
+                    />}
+                  {shouldShare &&
+                    <ShareButton
+                      tooltip={appText.tooltip.sharePhoto}
+                      photo={photo}
+                      recent={shouldShareRecents ? recent : undefined}
+                      year={shouldShareYear ? year : undefined}
+                      album={shouldShareAlbum ? album : undefined}
+                      tag={shouldShareTag ? primaryTag : undefined}
+                      camera={shouldShareCamera ? camera : undefined}
+                      lens={shouldShareLens ? lens : undefined}
+                      film={shouldShareFilm ? photo.film : undefined}
+                      recipe={shouldShareRecipe ? recipeTitle : undefined}
+                      focal={shouldShareFocalLength
+                        ? photo.focalLength
+                        : undefined}
+                      prefetch={prefetchRelatedLinks}
+                    />}
+                  {ALLOW_PUBLIC_DOWNLOADS &&
+                    <DownloadButton photo={photo} />}
+                </div>
+                {showStorageCheck &&
+                  <AdminPhotoStorageCheck photo={photo} />}
+              </div>
+            </div>
+          </div>
+        }
+      />
+    );
+  }
+
   return (
     <AppGrid
       containerRef={ref}
       className={className}
-      contentMain={showZoomControls
-        ? <div className={largePhotoContainerClassName}>
-          {renderLargePhoto}
-        </div>
-        : <Link
-          href={pathForPhoto({ photo })}
-          className={largePhotoContainerClassName}
-          prefetch={prefetch}
-        >
-          {renderLargePhoto}
-        </Link>}
+      contentMain={renderMainImage}
       classNameSide="relative"
       sideHiddenOnMobile={false}
       contentSide={

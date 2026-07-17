@@ -1,6 +1,10 @@
 'use client';
 
-import { PATH_ADMIN_CONFIGURATION, PATH_ADMIN_INSIGHTS } from '@/app/path';
+import {
+  PATH_ADMIN_CONFIGURATION,
+  PATH_ADMIN_DESIGN,
+  PATH_ADMIN_INSIGHTS,
+} from '@/app/path';
 import ResponsiveText from '@/components/primitives/ResponsiveText';
 import clsx from 'clsx/lite';
 import ClearCacheButton from '@/admin/ClearCacheButton';
@@ -17,11 +21,18 @@ const ADMIN_INFO_PAGES = [{
   title: 'Configuration',
   titleShort: 'Config',
   path: PATH_ADMIN_CONFIGURATION,
+}, {
+  title: 'Design',
+  titleShort: 'Design',
+  path: PATH_ADMIN_DESIGN,
 }];
 
 const ADMIN_INFO_PAGE_WITHOUT_INSIGHTS = [{
   title: 'App Configuration',
   path: PATH_ADMIN_CONFIGURATION,
+}, {
+  title: 'Design',
+  path: PATH_ADMIN_DESIGN,
 }] as typeof ADMIN_INFO_PAGES;
 
 export default function AdminInfoNav({

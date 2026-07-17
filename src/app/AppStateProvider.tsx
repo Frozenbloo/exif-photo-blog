@@ -41,13 +41,16 @@ import {
 } from '@/swr';
 import { warmRedisAction } from './actions';
 import useSupportsHover from '@/utility/useSupportsHover';
+import { Design } from '@/design';
 
 export default function AppStateProvider({
   children,
   areAdminDebugToolsEnabled,
+  design,
 }: {
   children: ReactNode
   areAdminDebugToolsEnabled?: boolean
+  design?: Design
 }) {
   const router = useRouter();
 
@@ -225,6 +228,7 @@ export default function AppStateProvider({
     <AppStateContext.Provider
       value={{
         // CORE
+        design,
         hasLoadedWithAnimations,
         invalidateSwr,
         nextPhotoAnimation,

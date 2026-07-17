@@ -15,9 +15,11 @@ import { AdminData } from '@/admin/actions';
 import { RecipeProps } from '@/recipe';
 import { getCountsForCategoriesCachedAction } from '@/category/actions';
 import { SWRKey } from '@/swr';
+import { Design } from '@/design';
 
 export type AppStateContextType = {
   // CORE
+  design?: Design
   hasLoadedWithAnimations?: boolean
   invalidateSwr?: (key?: SWRKey, revalidate?: boolean) => void
   nextPhotoAnimation?: AnimationConfig

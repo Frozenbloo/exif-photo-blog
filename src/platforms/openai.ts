@@ -102,7 +102,7 @@ export const generateOpenAiImageObjectQuery = async <T extends z.ZodSchema>(
   if (openai) {
     return generateText({
       model: openai(MODEL),
-      output: Output.object({ schema }),
+      experimental_output: Output.object({ schema }),
       messages: [{
         'role': 'user',
         'content': [
@@ -116,7 +116,7 @@ export const generateOpenAiImageObjectQuery = async <T extends z.ZodSchema>(
         ],
       }],
     }).then(result => Object.fromEntries(Object
-      .entries(result.output || {})
+      .entries(result.experimental_output || {})
       .map(([k, v]) => [k, cleanUpAiTextResponse(v as string)]),
     ) as z.infer<T>);
   } else {

@@ -43,7 +43,19 @@ export default function NavClient({
 
   const {
     hasLoadedWithAnimations,
+    design,
   } = useAppState();
+
+  const designTitleClassName = clsx(
+    design === 'volumes' &&
+      'font-serif uppercase tracking-[0.25em] text-xs',
+    design === 'issue' &&
+      'font-masthead uppercase tracking-wide text-xl',
+    design === 'titlecard' &&
+      'font-mincho font-bold tracking-[0.2em]',
+    design === 'hijack' &&
+      'design-nav-title font-stencil tracking-[0.15em]',
+  );
 
   const {
     classNameStickyContainer,
@@ -103,8 +115,15 @@ export default function NavClient({
                 'grow text-right min-w-0',
                 'translate-y-[-1px]',
               )}>
-                <div className="truncate overflow-hidden select-none">
+                <div className={clsx(
+                  'truncate overflow-hidden select-none',
+                  designTitleClassName,
+                )}>
+                  {design === 'hijack' &&
+                    <span className="font-mono text-dim">~$&nbsp;</span>}
                   {renderLink(navTitle, PATH_ROOT)}
+                  {design === 'hijack' &&
+                    <span className="design-cursor font-mono">&nbsp;▮</span>}
                 </div>
                 {navCaption &&
                   <div className={clsx(

@@ -34,6 +34,8 @@ import { PATH_FEED_JSON, PATH_RSS_XML } from '@/app/path';
 import SelectPhotosProvider from '@/admin/select/SelectPhotosProvider';
 import AdminBatchEditPanel from '@/admin/select/AdminBatchEditPanel';
 import Script from 'next/script';
+import { getDesignCached } from '@/design/cache';
+import { DESIGN_CONFIG, isDesignApplied } from '@/design';
 
 import '../tailwind.css';
 
@@ -87,16 +89,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const design = await getDesignCached();
+  const { forcedColorScheme } = DESIGN_CONFIG[design];
   return (
     <html
       lang={HTML_LANG}
       // Suppress hydration errors due to next-themes behavior
       suppressHydrationWarning
+      {...isDesignApplied(design) && { 'data-design': design }}
     >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -105,11 +110,18 @@ export default function RootLayout({
         // Center on large screens
         '3xl:flex flex-col items-center',
       )}>
-        <AppStateProvider areAdminDebugToolsEnabled={ADMIN_DEBUG_TOOLS_ENABLED}>
+        <AppStateProvider
+          areAdminDebugToolsEnabled={ADMIN_DEBUG_TOOLS_ENABLED}
+          design={design}
+        >
           <AppTextProvider>
             <SelectPhotosProvider>
               <ThemeColors />
-              <ThemeProvider attribute="class" defaultTheme={DEFAULT_THEME}>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme={DEFAULT_THEME}
+                {...forcedColorScheme && { forcedTheme: forcedColorScheme }}
+              >
                 <SwrConfigClient>
                   <SharedHoverProvider>
                     <div className={clsx(

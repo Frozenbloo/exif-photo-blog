@@ -77,6 +77,7 @@ export const PATH_ADMIN_ALBUMS          = `${PATH_ADMIN}/albums`;
 export const PATH_ADMIN_TAGS            = `${PATH_ADMIN}/tags`;
 export const PATH_ADMIN_RECIPES         = `${PATH_ADMIN}/recipes`;
 export const PATH_ADMIN_CONFIGURATION   = `${PATH_ADMIN}/configuration`;
+export const PATH_ADMIN_DESIGN          = `${PATH_ADMIN}/design`;
 export const PATH_ADMIN_INSIGHTS        = `${PATH_ADMIN}/insights`;
 export const PATH_ADMIN_ABOUT_EDIT      = `${PATH_ABOUT}/${EDIT}`;
 export const PATH_ADMIN_BASELINE        = `${PATH_ADMIN}/baseline`;
@@ -109,6 +110,7 @@ export const PATHS_ADMIN = [
   PATH_ADMIN_RECIPES,
   PATH_ADMIN_INSIGHTS,
   PATH_ADMIN_CONFIGURATION,
+  PATH_ADMIN_DESIGN,
   PATH_ADMIN_ABOUT_EDIT,
   PATH_ADMIN_BASELINE,
   PATH_ADMIN_COMPONENTS,
@@ -461,9 +463,13 @@ export const isPathAdminInsights = (pathname?: string) =>
 export const isPathAdminConfiguration = (pathname?: string) =>
   checkPathPrefix(pathname, PATH_ADMIN_CONFIGURATION);
 
+export const isPathAdminDesign = (pathname?: string) =>
+  checkPathPrefix(pathname, PATH_ADMIN_DESIGN);
+
 export const isPathAdminInfo = (pathname?: string) =>
   isPathAdminInsights(pathname) ||
-  isPathAdminConfiguration(pathname);
+  isPathAdminConfiguration(pathname) ||
+  isPathAdminDesign(pathname);
 
 export const isPathProtected = (pathname?: string) =>
   checkPathPrefix(pathname, PATH_ADMIN) ||

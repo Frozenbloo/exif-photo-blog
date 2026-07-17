@@ -16,6 +16,7 @@ import { GRID_GAP_CLASSNAME } from '@/components';
 import { useSelectPhotosState } from '@/admin/select/SelectPhotosState';
 import { DATA_KEY_PHOTO_GRID } from '@/admin/select/SelectPhotosProvider';
 import PhotoGridMasonry from './PhotoGridMasonry';
+import { DESIGN_CONFIG, isDesignApplied } from '@/design';
 
 export default function PhotoGrid({
   photos,
@@ -49,7 +50,12 @@ export default function PhotoGrid({
 } & PhotoSetCategory) {
   const {
     isGridHighDensity,
+    design,
   } = useAppState();
+
+  // Print-like designs never crop: tiles keep native aspect ratios
+  const showsUncroppedGrid =
+    design && DESIGN_CONFIG[design].showsUncroppedGrid;
 
   const {
     isSelectingPhotos,
@@ -70,7 +76,7 @@ export default function PhotoGrid({
         'group',
       )}
       style={{
-        ...(MASONRY_GRID_ENABLED) ? {
+        ...(MASONRY_GRID_ENABLED || showsUncroppedGrid) ? {
           aspectRatio: photo.aspectRatio,
         } : (GRID_ASPECT_RATIO !== 0) ? {
           aspectRatio: GRID_ASPECT_RATIO,
@@ -143,7 +149,11 @@ export default function PhotoGrid({
               : 'grid-cols-2 sm:grid-cols-4 md:grid-cols-3 lg:grid-cols-4',
           'items-center',
         )}
-        type={animate === false ? 'none' : undefined}
+        // Designed themes are still: the page-enter animation
+        // in app/template.tsx carries the motion instead
+        type={animate === false || isDesignApplied(design)
+          ? 'none'
+          : undefined}
         canStart={canStart}
         duration={0.7}
         staggerDelay={0.04}

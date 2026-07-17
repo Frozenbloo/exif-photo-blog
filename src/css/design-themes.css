@@ -1,0 +1,276 @@
+/*
+  Site-wide design themes, applied for all visitors via
+  <html data-design="...">, chosen by the admin at /admin/design.
+  Token defaults live in tailwind.css; each scope below overrides them.
+  '-invert' tokens are the values used when the dark class is active.
+*/
+
+/* ---------- The Volumes (photobook: plates + per-year inks) ---------- */
+[data-design='volumes'] {
+  --d-bg: #FBFAF7;
+  --d-bg-invert: #141312;
+  --d-bg-medium: #EFEDE6;
+  --d-bg-medium-invert: #242220;
+  --d-bg-dim: #F4F2EC;
+  --d-bg-dim-invert: #1D1B19;
+  --d-bg-extra-dim: #F7F5F0;
+  --d-bg-extra-dim-invert: #191817;
+  --d-text: #1C1A18;
+  --d-text-invert: #E8E4DC;
+  --d-medium-strong: #524D43;
+  --d-medium-strong-invert: #C8C1B4;
+  --d-medium: #6B6558;
+  --d-medium-invert: #A59D8E;
+  --d-dim: #8B857A;
+  --d-dim-invert: #736D62;
+  --d-icon: #37332C;
+  --d-icon-invert: #D8D3C8;
+  --d-border: #E6E2D7;
+  --d-border-invert: #2C2925;
+  --d-border-soft: #E0DCD0;
+  --d-border-soft-invert: #2A2723;
+  --d-radius: 0px;
+  --d-focus: #59201F;
+  --d-ink: #59201F;
+  --d-font-body: var(--font-serif);
+}
+
+/* ---------- The Issue (riso zine: newsprint + spot ink) ---------- */
+[data-design='issue'] {
+  --d-bg: #EFEDE6;
+  --d-bg-invert: #1E2025;
+  --d-bg-medium: #E2DFD5;
+  --d-bg-medium-invert: #2E3138;
+  --d-bg-dim: #E8E5DC;
+  --d-bg-dim-invert: #26292F;
+  --d-bg-extra-dim: #EBE9E0;
+  --d-bg-extra-dim-invert: #22252B;
+  --d-text: #23262B;
+  --d-text-invert: #E8E7E0;
+  --d-medium-strong: #43464C;
+  --d-medium-strong-invert: #C6C9CE;
+  --d-medium: #5C6068;
+  --d-medium-invert: #9FA3AB;
+  --d-dim: #8A8E96;
+  --d-dim-invert: #6A6E76;
+  --d-icon: #33363C;
+  --d-icon-invert: #D6D8DC;
+  --d-border: #DBD8CD;
+  --d-border-invert: #383B42;
+  --d-border-soft: #D5D2C6;
+  --d-border-soft-invert: #33363C;
+  --d-radius: 0px;
+  --d-focus: #0078BF;
+  --d-ink: #0078BF;
+}
+
+/* ---------- The Title Card (retro-Japanese: black + mincho) ----------
+   Forced dark: light-side tokens mirror dark values as a safety net */
+[data-design='titlecard'] {
+  --d-bg: #0B0B0C;
+  --d-bg-invert: #0B0B0C;
+  --d-bg-medium: #1A1A18;
+  --d-bg-medium-invert: #1A1A18;
+  --d-bg-dim: #141413;
+  --d-bg-dim-invert: #141413;
+  --d-bg-extra-dim: #101010;
+  --d-bg-extra-dim-invert: #101010;
+  --d-text: #F0EEE4;
+  --d-text-invert: #F0EEE4;
+  --d-medium-strong: #C9C4B6;
+  --d-medium-strong-invert: #C9C4B6;
+  --d-medium: #A9A497;
+  --d-medium-invert: #A9A497;
+  --d-dim: #7A766B;
+  --d-dim-invert: #7A766B;
+  --d-icon: #D9D4C7;
+  --d-icon-invert: #D9D4C7;
+  --d-border: #2A2A27;
+  --d-border-invert: #2A2A27;
+  --d-border-soft: #232320;
+  --d-border-soft-invert: #232320;
+  --d-radius: 0px;
+  --d-focus: #F94C00;
+  --d-ink: #F94C00;
+}
+
+/* ---------- The Hijack (pirate broadcast: void + RGB split) ----------
+   Forced dark, same safety net as titlecard */
+[data-design='hijack'] {
+  --d-bg: #0B0D12;
+  --d-bg-invert: #0B0D12;
+  --d-bg-medium: #161A22;
+  --d-bg-medium-invert: #161A22;
+  --d-bg-dim: #12151C;
+  --d-bg-dim-invert: #12151C;
+  --d-bg-extra-dim: #0F1218;
+  --d-bg-extra-dim-invert: #0F1218;
+  --d-text: #E9EEF0;
+  --d-text-invert: #E9EEF0;
+  --d-medium-strong: #C3CBD2;
+  --d-medium-strong-invert: #C3CBD2;
+  --d-medium: #9BA3AB;
+  --d-medium-invert: #9BA3AB;
+  --d-dim: #6E7681;
+  --d-dim-invert: #6E7681;
+  --d-icon: #C9D2D8;
+  --d-icon-invert: #C9D2D8;
+  --d-border: #1D2230;
+  --d-border-invert: #1D2230;
+  --d-border-soft: #1A1F2B;
+  --d-border-soft-invert: #1A1F2B;
+  --d-radius: 0px;
+  --d-focus: #31E4FF;
+  --d-ink: #31E4FF;
+  --d-ink-2: #FF3AA2;
+}
+
+/*
+  Grid photo treatments
+  [data-photo-grid] is set by PhotoGrid on its container
+*/
+
+/* Issue: tiles print as spot-ink duotones until hover */
+[data-design='issue'] [data-photo-grid] a {
+  background-color: var(--d-ink);
+}
+[data-design='issue'] [data-photo-grid] img:not([src^='data:']) {
+  filter: grayscale(1) contrast(1.05);
+  mix-blend-mode: screen;
+  transition: filter 0.35s ease;
+}
+[data-design='issue'] [data-photo-grid] a:hover img:not([src^='data:']) {
+  filter: none;
+  mix-blend-mode: normal;
+}
+
+/* Hijack: masthead carries a permanent RGB split */
+[data-design='hijack'] .design-nav-title {
+  text-shadow:
+    -1.5px 0 rgba(49, 228, 255, 0.85),
+    1.5px 0 rgba(255, 58, 162, 0.85);
+}
+
+/* Hijack: prompt cursor after the masthead */
+[data-design='hijack'] .design-cursor {
+  color: var(--d-ink);
+}
+
+/* Hijack: large photos sit under faint scanlines */
+[data-design='hijack'] .design-photo-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(233, 238, 240, 0.04) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+/*
+  Page + interaction animation, all gated behind reduced-motion
+*/
+@keyframes design-page-settle {
+  from {
+    opacity: 0;
+    transform: perspective(1200px) rotateY(2deg) translateX(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes design-card-in {
+  0% { opacity: 0; }
+  35% { opacity: 0; } /* beat of black before the cut */
+  100% { opacity: 1; }
+}
+
+@keyframes design-glitch-in {
+  0% {
+    opacity: 0.4;
+    clip-path: inset(0 0 65% 0);
+    transform: translateX(-6px);
+    filter: drop-shadow(2px 0 #31E4FF) drop-shadow(-2px 0 #FF3AA2);
+  }
+  50% {
+    opacity: 0.8;
+    clip-path: inset(55% 0 0 0);
+    transform: translateX(4px);
+  }
+  100% {
+    opacity: 1;
+    clip-path: inset(0);
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes design-glitch-hover {
+  0% {
+    clip-path: inset(5% 0 40% 0);
+    transform: translateX(-3px);
+    filter: drop-shadow(2px 0 #31E4FF) drop-shadow(-2px 0 #FF3AA2);
+  }
+  50% {
+    clip-path: inset(45% 0 5% 0);
+    transform: translateX(3px);
+    filter: drop-shadow(-2px 0 #31E4FF) drop-shadow(2px 0 #FF3AA2);
+  }
+  100% {
+    clip-path: inset(0);
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes design-glitch-text {
+  0%, 86%, 100% {
+    transform: none;
+  }
+  87% {
+    transform: translateX(2px) skewX(-4deg);
+    text-shadow: -4px 0 #31E4FF, 4px 0 #FF3AA2;
+  }
+  90% {
+    transform: translateX(-3px);
+    text-shadow: 4px 0 #31E4FF, -4px 0 #FF3AA2;
+  }
+  93% {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Print themes: pages settle like a turned leaf */
+  .design-page-enter--volumes,
+  .design-page-enter--issue {
+    animation: design-page-settle 0.45s ease-out both;
+    transform-origin: left center;
+  }
+  /* Title card: a beat of black before the cut */
+  .design-page-enter--titlecard {
+    animation: design-card-in 0.55s ease both;
+  }
+  /* Hijack: signal acquires */
+  .design-page-enter--hijack {
+    animation: design-glitch-in 0.35s steps(3) both;
+  }
+  [data-design='hijack'] [data-photo-grid] a:hover img:not([src^='data:']) {
+    animation: design-glitch-hover 0.45s steps(2) both;
+  }
+  [data-design='hijack'] .design-nav-title {
+    animation: design-glitch-text 3.4s steps(1) infinite;
+  }
+  [data-design='hijack'] .design-cursor {
+    animation: design-blink 1.1s steps(1) infinite;
+  }
+}
+
+@keyframes design-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
