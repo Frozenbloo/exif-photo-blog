@@ -107,6 +107,10 @@ export const volumeLabelForYear = (year?: string) =>
 export const yearFromPhotoDate = (takenAtNaive?: string) =>
   takenAtNaive?.slice(0, 4);
 
+export const HIJACK_TICKER_TEXT =
+  '▸ PIRATE BROADCAST ▸ ALL FRAMES LIBERATED ' +
+  '▸ SIGNAL: HIJACKED ▸ NO RIGHTS RESERVED ';
+
 // e.g. "'26 7 12" — the quartz datestamp of a 90s point-and-shoot
 export const datestampForPhotoDate = (takenAtNaive?: string) => {
   const [year, month, day] = takenAtNaive?.split(/[\s-]/) ?? [];

@@ -22,6 +22,8 @@ import {
 import { useRef } from 'react';
 import useStickyNav from './useStickyNav';
 import { useAppState } from '@/app/AppState';
+import { isDesignApplied } from '@/design';
+import DesignNav from '@/design/DesignNav';
 
 const NAV_HEIGHT_CLASS = NAV_CAPTION
   ? 'min-h-[4rem] sm:min-h-[5rem]'
@@ -45,17 +47,6 @@ export default function NavClient({
     hasLoadedWithAnimations,
     design,
   } = useAppState();
-
-  const designTitleClassName = clsx(
-    design === 'volumes' &&
-      'font-serif uppercase tracking-[0.25em] text-xs',
-    design === 'issue' &&
-      'font-masthead uppercase tracking-wide text-xl',
-    design === 'titlecard' &&
-      'font-mincho font-bold tracking-[0.2em]',
-    design === 'hijack' &&
-      'design-nav-title font-stencil tracking-[0.15em]',
-  );
 
   const {
     classNameStickyContainer,
@@ -105,34 +96,35 @@ export default function NavClient({
                 'md:w-[calc(100%+8px)] md:translate-x-[-4px] md:px-[4px]',
                 classNameStickyNav,
               )}>
-              <AppViewSwitcher
-                currentSelection={switcherSelectionForPath()}
-                className="translate-x-[-1px]"
-                animate={hasLoadedWithAnimations && isNavVisible}
-                hideSortControl={isInEmptyState}
-              />
-              <div className={clsx(
-                'grow text-right min-w-0',
-                'translate-y-[-1px]',
-              )}>
-                <div className={clsx(
-                  'truncate overflow-hidden select-none',
-                  designTitleClassName,
-                )}>
-                  {design === 'hijack' &&
-                    <span className="font-mono text-dim">~$&nbsp;</span>}
-                  {renderLink(navTitle, PATH_ROOT)}
-                  {design === 'hijack' &&
-                    <span className="design-cursor font-mono">&nbsp;▮</span>}
-                </div>
-                {navCaption &&
+              {isDesignApplied(design)
+                ? <DesignNav {...{
+                  navTitle,
+                  navCaption,
+                  currentSelection: switcherSelectionForPath(),
+                }} />
+                : <>
+                  <AppViewSwitcher
+                    currentSelection={switcherSelectionForPath()}
+                    className="translate-x-[-1px]"
+                    animate={hasLoadedWithAnimations && isNavVisible}
+                    hideSortControl={isInEmptyState}
+                  />
                   <div className={clsx(
-                    'hidden sm:block truncate overflow-hidden',
-                    'leading-tight text-dim',
+                    'grow text-right min-w-0',
+                    'translate-y-[-1px]',
                   )}>
-                    {navCaption}
-                  </div>}
-              </div>
+                    <div className="truncate overflow-hidden select-none">
+                      {renderLink(navTitle, PATH_ROOT)}
+                    </div>
+                    {navCaption &&
+                      <div className={clsx(
+                        'hidden sm:block truncate overflow-hidden',
+                        'leading-tight text-dim',
+                      )}>
+                        {navCaption}
+                      </div>}
+                  </div>
+                </>}
             </nav>]
             : []}
         />

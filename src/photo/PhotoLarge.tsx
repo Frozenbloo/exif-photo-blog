@@ -334,9 +334,31 @@ export default function PhotoLarge({
         containerRef={ref}
         className={className}
         contentMain={
-          <div className="space-y-5">
-            <div className="relative design-photo-frame">
-              {renderMainImage}
+          <div className={clsx(
+            'space-y-5',
+            // Plate margins: photobooks breathe
+            isVolumes && 'max-w-3xl mx-auto',
+          )}>
+            <div className={clsx(
+              'relative design-photo-frame',
+              // Tategaki: vertical title beside the photo
+              isTitlecard && hasTitle && 'flex gap-4 sm:gap-6',
+            )}>
+              {isTitlecard && hasTitle
+                ? <>
+                  <div className="grow min-w-0">
+                    {renderMainImage}
+                  </div>
+                  <div className={clsx(
+                    'shrink-0 [writing-mode:vertical-rl]',
+                    'font-mincho font-bold tracking-[0.35em] text-xl',
+                  )}>
+                    {showTitleAsH1
+                      ? <h1>{renderDesignedTitle}</h1>
+                      : renderDesignedTitle}
+                  </div>
+                </>
+                : renderMainImage}
               {isHijack && <>
                 <span className={clsx(
                   'absolute top-0 left-0 size-4 z-10 pointer-events-none',
@@ -380,7 +402,8 @@ export default function PhotoLarge({
                   timezone={null}
                   hideTime={!SHOW_TAKEN_AT_TIME}
                 />}
-              {hasTitle && (showTitleAsH1
+              {/* Titlecard shows the title vertically beside the photo */}
+              {hasTitle && !isTitlecard && (showTitleAsH1
                 ? <h1 className={designedTitleClassName}>
                   {renderDesignedTitle}
                 </h1>

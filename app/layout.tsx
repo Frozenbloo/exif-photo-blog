@@ -127,6 +127,9 @@ export default async function RootLayout({
                     <div className={clsx(
                       'mx-3 mb-3',
                       'lg:mx-6 lg:mb-6',
+                      // Print designs: generous, centered page margins
+                      (design === 'volumes' || design === 'issue') &&
+                        'md:mx-12 lg:mx-20 xl:mx-auto xl:w-full xl:max-w-6xl',
                     )}>
                       <Nav />
                       <main>

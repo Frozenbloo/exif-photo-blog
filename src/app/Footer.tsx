@@ -14,7 +14,12 @@ import AnimateItems from '@/components/AnimateItems';
 import { useAppState } from '@/app/AppState';
 import Spinner from '@/components/Spinner';
 import { useAppText } from '@/i18n/state/client';
-import { DEFAULT_DESIGN, DESIGN_CONFIG } from '@/design';
+import {
+  DEFAULT_DESIGN,
+  DESIGN_CONFIG,
+  HIJACK_TICKER_TEXT,
+  isDesignApplied,
+} from '@/design';
 
 export default function Footer() {
   const pathname = usePathname();
@@ -48,40 +53,62 @@ export default function Footer() {
             ? [<div
               key="footer"
               className={clsx(
+                isDesignApplied(design) &&
+                  'border-t border-(--d-border) pt-3',
+                design === 'volumes' &&
+                  'font-serif uppercase tracking-[0.2em] text-xs',
+                design === 'issue' &&
+                  'font-mono uppercase tracking-[0.2em] text-xs',
+                design === 'titlecard' &&
+                  'font-mono tracking-[0.25em] text-xs',
+                design === 'hijack' && 'font-mono text-xs',
+              )}>
+              {design === 'hijack' &&
+                <div className={clsx(
+                  'design-ticker',
+                  'text-[0.6rem] tracking-[0.25em] text-(--d-ink)',
+                  'border-b border-(--d-border) pb-2 mb-2',
+                )}>
+                  <span className="design-ticker-track">
+                    {HIJACK_TICKER_TEXT}{HIJACK_TICKER_TEXT}
+                  </span>
+                </div>}
+              <div className={clsx(
                 'flex items-center gap-1',
                 'text-dim min-h-10',
               )}>
-              <div className={clsx(
-                'flex gap-x-3 xs:gap-x-4 grow flex-wrap',
-                'w-full min-w-0',
-              )}>
-                {userEmail || userEmailEager
-                  ? <>
-                    <Link
-                      href={PATH_ADMIN_PHOTOS}
-                      className="truncate max-w-full max-sm:hidden"
-                    >
-                      {userEmail || userEmailEager}
-                    </Link>
-                    <form action={() => signOutAction()
-                      .then(clearAuthStateAndRedirectIfNecessary)}>
-                      <SubmitButtonWithStatus styleAs="link">
-                        {appText.auth.signOut}
-                      </SubmitButtonWithStatus>
-                    </form>
-                  </>
-                  : isCheckingAuth
-                    ? <Spinner size={16} className="translate-y-[2px]" />
-                    : SHOW_REPO_LINK
-                      ? <RepoLink />
-                      : <Link href={PATH_ADMIN_PHOTOS}>
-                        {appText.nav.admin}
-                      </Link>}
-              </div>
-              {showThemeSwitcher &&
+                <div className={clsx(
+                  'flex gap-x-3 xs:gap-x-4 grow flex-wrap',
+                  'w-full min-w-0',
+                )}>
+                  {userEmail || userEmailEager
+                    ? <>
+                      <Link
+                        href={PATH_ADMIN_PHOTOS}
+                        className="truncate max-w-full max-sm:hidden"
+                      >
+                        {userEmail || userEmailEager}
+                      </Link>
+                      <form action={() => signOutAction()
+                        .then(clearAuthStateAndRedirectIfNecessary)}>
+                        <SubmitButtonWithStatus styleAs="link">
+                          {appText.auth.signOut}
+                        </SubmitButtonWithStatus>
+                      </form>
+                    </>
+                    : isCheckingAuth
+                      ? <Spinner size={16} className="translate-y-[2px]" />
+                      : SHOW_REPO_LINK
+                        ? <RepoLink />
+                        : <Link href={PATH_ADMIN_PHOTOS}>
+                          {appText.nav.admin}
+                        </Link>}
+                </div>
+                {showThemeSwitcher &&
                 <div className="flex items-center h-10 shrink-0">
                   <ThemeSwitcher />
                 </div>}
+              </div>
             </div>]
             : []}
         />}

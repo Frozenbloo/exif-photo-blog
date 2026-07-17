@@ -89,14 +89,6 @@ export default function PhotoMedium({
             alt={altTextForPhoto(photo)}
             priority={priority}
           />
-          {design === 'hijack' &&
-            <div className={clsx(
-              'absolute bottom-1 left-1.5 z-10 pointer-events-none',
-              'font-mono text-[0.6rem] tracking-wider text-(--d-ink)',
-              'opacity-0 group-hover:opacity-100 transition-opacity',
-            )}>
-              {photo.id}.raw
-            </div>}
           {datestamp &&
             <div className={clsx(
               'absolute bottom-1.5 right-2 z-10 pointer-events-none',

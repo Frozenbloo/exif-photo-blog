@@ -11,7 +11,7 @@ import {
 } from '@/app/config';
 import { useAppState } from '@/app/AppState';
 import SelectTileOverlay from '@/components/SelectTileOverlay';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { GRID_GAP_CLASSNAME } from '@/components';
 import { useSelectPhotosState } from '@/admin/select/SelectPhotosState';
 import { DATA_KEY_PHOTO_GRID } from '@/admin/select/SelectPhotosProvider';
@@ -64,6 +64,20 @@ export default function PhotoGrid({
     togglePhotoSelection,
   } = useSelectPhotosState();
 
+  const isDesigned = isDesignApplied(design);
+  const isVolumes = design === 'volumes';
+  const isIssue = design === 'issue';
+  const isTitlecard = design === 'titlecard';
+  const isHijack = design === 'hijack';
+  // Justified rows of native-ratio plates (volumes + issue)
+  const isJustified = isVolumes || isIssue;
+
+  // Themed grids skip AnimateItems (stillness): release anything
+  // gated on the entrance animation completing
+  useEffect(() => {
+    if (isDesigned) { onAnimationComplete?.(); }
+  }, [isDesigned, onAnimationComplete]);
+
   const photoNodes = photos.map((photo, index) => {
     const isSelected = (
       selectedPhotoIds?.includes(photo.id) ||
@@ -114,6 +128,152 @@ export default function PhotoGrid({
   const allItems = photoNodes.concat(
     additionalTile ? [<div key="more">{additionalTile}</div>] : [],
   );
+
+  // THEMED GRIDS: plain containers (no entrance animation),
+  // justified plate rows, tile captions, month divider cards
+  if (isDesigned) {
+    const renderMonthDivider = (month: string) => {
+      const [year, monthNumber] = month.split('-');
+      // ponytail: fixed en-US month names sidestep SSR/client
+      // locale mismatches; wire to i18n if it ever matters
+      const monthName = new Date(Number(year), Number(monthNumber) - 1)
+        .toLocaleString('en-US', { month: 'long' });
+      return (
+        <div
+          key={`month-${month}`}
+          className={clsx(
+            'flex flex-col items-center justify-center gap-1.5',
+            'border border-(--d-border)',
+          )}
+          style={{
+            aspectRatio: GRID_ASPECT_RATIO !== 0 ? GRID_ASPECT_RATIO : 1,
+          }}
+        >
+          <div className="font-mincho font-bold text-2xl sm:text-3xl">
+            {Number(monthNumber)}月
+          </div>
+          <div className={clsx(
+            'font-mono uppercase text-[0.55rem] tracking-[0.3em]',
+            'text-(--d-ink)',
+          )}>
+            {monthName} {year}
+          </div>
+        </div>
+      );
+    };
+
+    const designedTiles: ReactNode[] = [];
+    let lastMonth: string | undefined;
+
+    photos.forEach((photo, index) => {
+      if (isTitlecard) {
+        const month = photo.takenAtNaive?.slice(0, 7);
+        if (month && month !== lastMonth) {
+          lastMonth = month;
+          designedTiles.push(renderMonthDivider(month));
+        }
+      }
+
+      const isSelected = (
+        selectedPhotoIds?.includes(photo.id) ||
+        isSelectingAllPhotos
+      ) ?? false;
+
+      // ponytail: plate numbers follow the current sort order, not
+      // archive position—global numbering needs a row_number query
+      const tileCaption = isVolumes
+        ? `PL. ${index + 1}`
+        : isIssue
+          ? `Nº ${index + 1}`
+          : isHijack
+            ? `${photo.id}.raw`
+            : undefined;
+
+      designedTiles.push(
+        <figure
+          key={photo.id}
+          className="m-0 min-w-0 flex flex-col gap-1"
+          style={isJustified
+            ? {
+              flexGrow: photo.aspectRatio * 100,
+              flexBasis: `${photo.aspectRatio * 11}rem`,
+            }
+            : undefined}
+        >
+          <div
+            className="flex relative overflow-hidden group w-full"
+            style={{
+              aspectRatio: isJustified || GRID_ASPECT_RATIO === 0
+                ? photo.aspectRatio
+                : GRID_ASPECT_RATIO,
+            }}
+          >
+            <PhotoMedium
+              className={clsx(
+                'flex w-full h-full',
+                isSelectingPhotos && 'pointer-events-none',
+                classNamePhoto,
+              )}
+              {...{
+                photo,
+                ...categories,
+                selected: isSelected,
+                priority: prioritizeInitialPhotos ? index < 6 : undefined,
+                onVisible: index === photos.length - 1
+                  ? onLastPhotoVisible
+                  : undefined,
+              }}
+            />
+            {isSelectingPhotos &&
+              <SelectTileOverlay
+                isSelected={isSelected}
+                onSelectChange={() => togglePhotoSelection?.(photo.id)}
+              />}
+          </div>
+          {tileCaption &&
+            <figcaption className={clsx(
+              'text-[0.6rem] tracking-[0.2em] text-dim uppercase',
+              isVolumes ? 'font-serif text-center' : 'font-mono',
+            )}>
+              {tileCaption}
+            </figcaption>}
+        </figure>,
+      );
+    });
+
+    if (additionalTile) {
+      designedTiles.push(
+        <div
+          key="more"
+          style={isJustified
+            ? { flexGrow: 100, flexBasis: '10rem' }
+            : undefined}
+        >
+          {additionalTile}
+        </div>,
+      );
+    }
+
+    return (
+      <div {...{ [DATA_KEY_PHOTO_GRID]: selectable, className }}>
+        <div className={clsx(
+          isJustified
+            ? 'flex flex-wrap design-grid-justified gap-2 sm:gap-3'
+            : clsx(
+              'grid items-start',
+              small
+                ? 'grid-cols-3 xs:grid-cols-6'
+                : isGridHighDensity
+                  ? 'grid-cols-2 xs:grid-cols-4 lg:grid-cols-6'
+                  : 'grid-cols-2 sm:grid-cols-4 md:grid-cols-3 lg:grid-cols-4',
+              isTitlecard ? 'gap-1.5 sm:gap-2.5' : GRID_GAP_CLASSNAME,
+            ),
+        )}>
+          {designedTiles}
+        </div>
+      </div>
+    );
+  }
 
   if (MASONRY_GRID_ENABLED) {
     return (
